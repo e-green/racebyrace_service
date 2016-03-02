@@ -1,0 +1,50 @@
+package lk.egreen.booking.server.dao.impl;
+
+import lk.egreen.booking.server.dao.BranchPermissionDAOController;
+import lk.egreen.booking.server.entity.BranchPermission;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+
+/**
+ * Created by Pramoda Fernando on 1/14/2015.
+ */
+
+@Repository
+public class BranchPermissionDAOControllerImpl extends AbstractDAOController<BranchPermission,String> implements BranchPermissionDAOController {
+    public BranchPermissionDAOControllerImpl() {
+        super(BranchPermission.class, String.class);
+    }
+
+
+
+
+    @Override
+    public Integer removePermission(String branchpermissionid) {
+        Session session = getSession();
+        String hql = "delete from BranchPermission where branchpermissionid= :branchpermissionid";
+        int i = session.createQuery(hql).setString("branchpermissionid", branchpermissionid).executeUpdate();
+        return i;
+    }
+
+    @Override
+    public Boolean checkBranchPermission(String adminid, String branchId) {
+        Criteria criteria = getSession().createCriteria(entityType);
+        criteria.add(Restrictions.eq("adminId", adminid));
+        criteria.add(Restrictions.eq("branchId", branchId));
+        if ( criteria.list().size()>0) {
+
+            BranchPermission o = (BranchPermission) criteria.list().get(0);
+            if (o != null) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }else {
+            return false;
+        }
+
+    }
+}
